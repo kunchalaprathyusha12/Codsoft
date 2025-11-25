@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Menu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #333;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            padding: 60px 40px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 15s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .restaurant-name {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .restaurant-tagline {
+            font-size: 18px;
+            opacity: 0.95;
+            letter-spacing: 1px;
+            font-style: italic;
+        }
+
+        .menu-nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 30px 40px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            sticky: top 0;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            padding: 12px 28px;
+            background: white;
+            border: 2px solid #ff6b6b;
+            color: #ff6b6b;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-btn:hover,
+        .nav-btn.active {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+
+        .menu-content {
+            padding: 40px;
+        }
+
+        .category-section {
+            margin-bottom: 50px;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #ff6b6b;
+        }
+
+        .category-icon {
+            font-size: 36px;
+            margin-right: 15px;
+        }
+
+        .category-title {
+            font-size: 32px;
+            color: #2d2d2d;
+            font-weight: bold;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .menu-item {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,107,107,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .menu-item:hover::before {
+            left: 100%;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #ff6b6b;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .item-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d2d2d;
+            flex: 1;
+        }
+
+        .item-price {
+            font-size: 22px;
+            font-weight: bold;
+            color: #ff6b6b;
+            margin-left: 15px;
+        }
+
+        .item-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .item-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .tag {
+            padding: 4px 12px;
+            background: #fff5f5;
+            color: #ff6b6b;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tag.spicy {
+            background: #fff0f0;
+            color: #e74c3c;
+        }
+
+        .tag.veg {
+            background: #f0fff4;
+            color: #38a169;
+        }
+
+        .tag.popular {
+            background: #fffaf0;
+            color: #f59e0b;
+        }
+
+        .special-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+        }
+
+        .footer {
+            background: #2d2d2d;
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .footer-info {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .info-block h3 {
+            color: #ff6b6b;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .info-block p {
+            font-size: 14px;
+            opacity: 0.9;
+            line-height: 1.8;
+        }
+
+        .search-box {
+            margin: 30px 40px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 30px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                padding: 40px 20px;
+            }
+
+            .restaurant-name {
+                font-size: 32px;
+            }
+
+            .restaurant-tagline {
+                font-size: 14px;
+            }
+
+            .menu-nav {
+                padding: 20px;
+            }
+
+            .nav-btn {
+                padding: 10px 20px;
+                font-size: 12px;
+            }
+
+            .menu-content {
+                padding: 20px;
+            }
+
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .category-title {
+                font-size: 24px;
+            }
+
+            .footer-info {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <div class="hero-content">
+                <div class="restaurant-name">FLAVOR HOUSE</div>
+                <div class="restaurant-tagline">Where Every Bite Tells a Story</div>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="Search for your favorite dish..." id="searchInput">
+            <span class="search-icon">🔍</span>
+        </div>
+
+        <!-- Navigation -->
+        <div class="menu-nav">
+            <button class="nav-btn active" onclick="scrollToCategory('appetizers')">Appetizers</button>
+            <button class="nav-btn" onclick="scrollToCategory('mains')">Main Course</button>
+            <button class="nav-btn" onclick="scrollToCategory('desserts')">Desserts</button>
+            <button class="nav-btn" onclick="scrollToCategory('beverages')">Beverages</button>
+        </div>
+
+        <!-- Menu Content -->
+        <div class="menu-content">
+            <!-- Appetizers -->
+            <div class="category-section" id="appetizers">
+                <div class="category-header">
+                    <span class="category-icon">🍽️</span>
+                    <h2 class="category-title">Appetizers</h2>
+                </div>
+                <div class="menu-grid">
+                    <div class="menu-item">
+                        <span class="special-badge">Chef's Special</span>
+                        <div class="item-header">
+                            <div class="item-name">Crispy Spring Rolls</div>
+                            <div class="item-price">$8.99</div>
+                        </div>
+                        <div class="item-description">
+                            Golden fried rolls filled with fresh vegetables, served with sweet chili sauce
+                        </div>
+                        <div class="item-tags">
+                            <span class="tag veg">Vegetarian</span>
+                            <span class="tag popular">Popular</span>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="item-header">
+                            <div class="item-name">Buffalo Wings</div>
+                            <div class="item-price">$12.99</div>
+                        </div>
+                        <div class="item-description">
+                            Spicy chicken wings tossed in signature buffalo sauce with ranch dip
+                        </div>
+                        <div class="item-tags">
+                            <span class="tag spicy">Spicy</span>
+                            <span class="tag popular">Popular</span>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="item-header">
+                            <div class="item-name">Mozzarella Sticks</div>
+                            <div class="item-price">$9.99</div>
+                        </div>
+                        <div class="item-description">
+                            Breaded mozzarella cheese sticks served with marinara sauce
+                        </div>
+                        <div class="item-tags">
+                            <span class="tag veg">Vegetarian</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Course -->
+            <div class="category-section" id="mains">
+                <div class="category-header">
+                    <span class="category-icon">🍖</span>
+                    <h2 class="category-title">Main Course</h2>
+                </div>
+                <div class="menu-grid">
+                    <div class="menu-item">
+                        <span class="special-badge">Best Seller</span>
+                        <div class="item-header">
+                            <div class="item-name">Grilled Salmon</div>
+                            <div class="item-price">$24.99</div>
+                        </div>
+                        <div class="item-description">
+                            Fresh Atlantic salmon grilled to perfection, served with roasted vegetables and lemon butter sauce
+                        </div>
+                        <div class="item-tags">
+                            <span class="tag popular">Popular</span>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="item-header">
+                            <div class="item-name">Beef Tenderloin Steak</div>
+                            <div class="item-price">$32.99</div>
+                        </div>
+                        <div class="item-description">
+                            Premium tenderloin steak cooked to your preference with garlic mashed potatoes
+                        </div>
+                        <div class="item-tags">
+                            <span class="tag popular">Popular</span>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="item-header">
+                            <div class="item-name">Vegetable Pasta Primavera</div>
+                            <div class="item-price">$16.99</div>
+                        </div>
+                        <div class="item-description">
+                            Fresh pasta tossed with seasonal vegetables in a light cream sauce
+                        </div>
+                        <div class="item-tags">
+                            <span class="tag veg">Vegetarian</span>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="item-header">
+                            <div class="item-name">Thai Green Curry</div>
+                            <div class="item-price">$18.99</div>
+                        </div>
+                        <div class="item-description">
+                            Authentic Thai curry with chicken, vegetables, and jasmine rice
+                        </div>
+                        <div class="item-tags">
+                            <span class="tag spicy">Spicy</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desserts -->
+            <div class="category-section" id="desserts">
+                <div class="category-header">
+                    <span class="category-icon">🍰</span>
+                    <h2 class="category-title">Desserts</h2>
+                </div>
+                <div class="menu-grid">
+                    <div class="menu-item">
+                        <span class="special-badge">Signature</span>
+                        <div class="item-header">
+                            <div class="item-name">Chocolate Lava Cake</div>
+                            <div class="item-price">$8.99</div>
+                        </div>
+                        <div class="item-description">
+                            Warm chocolate cake with a molten center, served with vanilla ice cream
+                        </div>
+                        <div class="item-tags">
+                            <span class="tag popular">Popular</span>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="item-header">
+                            <div class="item-name">New York Cheesecake</div>
+                            <div class="item-price">$7.99</div>
+                        </div>
+                        <div class="item-description">
+                            Classic creamy cheesecake with berry compote
+                        </div>
+                        <div class="item-tags">
+                            <span class="tag veg">Vegetarian</span>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="item-header">
+                            <div class="item-name">Tiramisu</div>
+                            <div class="item-price">$8.99</div>
+                        </div>
+                        <div class="item-description">
+                            Italian classic with layers of coffee-soaked ladyfingers and mascarpone
+                        </div>
+                        <div class="item-tags">
+                            <span class="tag veg">Vegetarian</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Beverages -->
+            <div class="category-section" id="beverages">
+                <div class="category-header">
+                    <span class="category-icon">🍹</span>
+                    <h2 class="category-title">Beverages</h2>
+                </div>
+                <div class="menu-grid">
+                    <div class="menu-item">
+                        <div class="item-header">
+                            <div class="item-name">Fresh Fruit Smoothie</div>
+                            <div class="item-price">$6.99</div>
+                        </div>
+                        <div class="item-description">
+                            Blend of seasonal fruits with yogurt and honey
+                        </div>
+                        <div class="item-tags">
+                            <span class="tag veg">Vegetarian</span>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="item-header">
+                            <div class="item-name">Craft Coffee</div>
+                            <div class="item-price">$4.99</div>
+                        </div>
+                        <div class="item-description">
+                            Freshly brewed artisan coffee from single-origin beans
+                        </div>
+                        <div class="item-tags">
+                            <span class="tag veg">Vegetarian</span>
+                        </div>
+                    </div>
+
+                    <div class="menu-item">
+                        <div class="item-header">
+                            <div class="item-name">Iced Lemon Tea</div>
+                            <div class="item-price">$4.99</div>
+                        </div>
+                        <div class="item-description">
+                            Refreshing homemade iced tea with fresh lemon and mint
+                        </div>
+                        <div class="item-tags">
+                            <span class="tag veg">Vegetarian</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-info">
+                <div class="info-block">
+                    <h3>Hours</h3>
+                    <p>Mon - Thu: 11:00 AM - 10:00 PM</p>
+                    <p>Fri - Sat: 11:00 AM - 11:00 PM</p>
+                    <p>Sunday: 12:00 PM - 9:00 PM</p>
+                </div>
+                <div class="info-block">
+                    <h3>Location</h3>
+                    <p>123 Flavor Street</p>
+                    <p>Food District, FC 12345</p>
+                    <p>Phone: (555) 123-4567</p>
+                </div>
+                <div class="info-block">
+                    <h3>Follow Us</h3>
+                    <p>Instagram: @flavorhouse</p>
+                    <p>Facebook: /flavorhouse</p>
+                    <p>Twitter: @flavorhouse</p>
+                </div>
+            </div>
+            <p style="opacity: 0.7; font-size: 14px;">© 2024 Flavor House. All rights reserved.</p>
+        </div>
+    </div>
+
+    <script>
+        function scrollToCategory(categoryId) {
+            const element = document.getElementById(categoryId);
+            const offset = 100;
+            const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+            const offsetPosition = elementPosition - offset;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const menuItems = document.querySelectorAll('.menu-item');
+
+            menuItems.forEach(item => {
+                const itemName = item.querySelector('.item-name').textContent.toLowerCase();
+                const itemDesc = item.querySelector('.item-description').textContent.toLowerCase();
+
+                if (itemName.includes(searchTerm) || itemDesc.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
