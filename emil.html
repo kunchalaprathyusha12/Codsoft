@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Template Builder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4F46E5;
+            --primary-dark: #4338CA;
+            --secondary-color: #F9FAFB;
+            --text-color: #1F2937;
+            --light-text: #6B7280;
+            --border-color: #E5E7EB;
+            --success-color: #10B981;
+            --warning-color: #F59E0B;
+            --error-color: #EF4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #F3F4F6;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--text-color);
+        }
+
+        .template-section {
+            margin-bottom: 32px;
+        }
+
+        .template-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-color);
+        }
+
+        .template-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .template-item {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .template-item:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+
+        .template-item.active {
+            border-color: var(--primary-color);
+            background-color: rgba(79, 70, 229, 0.1);
+        }
+
+        .template-item h4 {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .template-item p {
+            font-size: 12px;
+            color: var(--light-text);
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+
+        /* Editor and Preview Container */
+        .editor-container {
+            display: flex;
+            flex: 1;
+            gap: 24px;
+            overflow: hidden;
+        }
+
+        /* Editor Styles */
+        .editor {
+            flex: 1;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .editor h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .color-picker-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .color-picker {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* Preview Styles */
+        .preview {
+            flex: 1;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .preview-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .device-selector {
+            display: flex;
+            gap: 8px;
+        }
+
+        .device-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: white;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .device-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .device-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .preview-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #F9FAFB;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .email-preview {
+            width: 100%;
+            max-width: 600px;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .email-preview.mobile {
+            max-width: 375px;
+        }
+
+        .email-preview.tablet {
+            max-width: 768px;
+        }
+
+        /* Email Template Styles */
+        .email-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .email-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .email-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .email-body {
+            padding: 24px;
+        }
+
+        .email-body h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .email-body p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            color: var(--text-color);
+        }
+
+        .email-cta {
+            margin: 24px 0;
+            text-align: center;
+        }
+
+        .email-cta a {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .email-cta a:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .email-footer {
+            background-color: var(--secondary-color);
+            padding: 24px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--light-text);
+        }
+
+        .email-footer p {
+            margin-bottom: 8px;
+        }
+
+        .email-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+            
+            .editor-container {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--light-text);
+        }
+
+        .modal-body {
+            margin-bottom: 24px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Email Templates</h2>
+            
+            <div class="template-section">
+                <h3>Basic Templates</h3>
+                <div class="template-list">
+                    <div class="template-item active">
+                        <h4>Welcome Email</h4>
+                        <p>Send to new subscribers</p>
+                    </div>
+                    <div class="template-item">
+                        <h4>Newsletter</h4>
+                        <p>Regular updates and news</p>
+                    </div>
+                    <div class="template-item">
+                        <h4>Promotional</h4>
+                        <p>Special offers and discounts</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="template-section">
+                <h3>Advanced Templates</h3>
+                <div class="template-list">
+                    <div class="template-item">
+                        <h4>Event Invitation</h4>
+                        <p>Invite customers to events</p>
+                    </div>
+                    <div class="template-item">
+                        <h4>Abandoned Cart</h4>
+                        <p>Recover lost sales</p>
+                    </div>
+                    <div class="template-item">
+                        <h4>Feedback Request</h4>
+                        <p>Collect customer feedback</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="template-section">
+                <h3>Custom Templates</h3>
+                <div class="template-list">
+                    <div class="template-item">
+                        <h4>Create New</h4>
+                        <p>Design from scratch</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Welcome Email Template</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" id="saveBtn">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                    <button class="btn btn-primary" id="sendTestBtn">
+                        <i class="fas fa-paper-plane"></i> Send Test
+                    </button>
+                </div>
+            </div>
+            
+            <div class="editor-container">
+                <!-- Editor Panel -->
+                <div class="editor">
+                    <h2>Template Editor</h2>
+                    
+                    <div class="form-group">
+                        <label for="emailSubject">Email Subject</label>
+                        <input type="text" id="emailSubject" class="form-control" value="Welcome to Our Community!">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="headerTitle">Header Title</label>
+                        <input type="text" id="headerTitle" class="form-control" value="Welcome to AppName">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="headerSubtitle">Header Subtitle</label>
+                        <input type="text" id="headerSubtitle" class="form-control" value="We're excited to have you on board">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="emailContent">Email Content</label>
+                        <textarea id="emailContent" class="form-control">Thank you for joining our community! We're thrilled to have you as a new member. As a welcome gift, here's a special 10% discount on your first purchase.
+
+Simply use the code WELCOME10 at checkout. This offer is valid for the next 7 days.
+
+We're constantly working to improve our products and services based on feedback from customers like you. If you have any questions or suggestions, please don't hesitate to reach out to our support team.
+
+Once again, welcome aboard! We can't wait to see what you'll accomplish with our platform.</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ctaText">Call to Action Text</label>
+                        <input type="text" id="ctaText" class="form-control" value="Shop Now">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="ctaLink">Call to Action Link</label>
+                        <input type="text" id="ctaLink" class="form-control" value="https://example.com/shop">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Header Background Color</label>
+                        <div class="color-picker-group">
+                            <input type="color" id="headerColor" class="color-picker" value="#4F46E5">
+                            <span>Primary Color</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Footer Text</label>
+                        <textarea id="footerText" class="form-control">© 2023 AppName. All rights reserved.
+123 Main Street, Anytown, USA
+You're receiving this email because you subscribed to our newsletter.
+<a href="#">Unsubscribe</a> | <a href="#">Privacy Policy</a></textarea>
+                    </div>
+                </div>
+                
+                <!-- Preview Panel -->
+                <div class="preview">
+                    <div class="preview-header">
+                        <h2>Preview</h2>
+                        <div class="device-selector">
+                            <button class="device-btn" data-device="desktop">Desktop</button>
+                            <button class="device-btn active" data-device="mobile">Mobile</button>
+                            <button class="device-btn" data-device="tablet">Tablet</button>
+                        </div>
+                    </div>
+                    
+                    <div class="preview-container">
+                        <div class="email-preview mobile" id="emailPreview">
+                            <div class="email-header" id="emailHeader">
+                                <h1 id="previewHeaderTitle">Welcome to AppName</h1>
+                                <p id="previewHeaderSubtitle">We're excited to have you on board</p>
+                            </div>
+                            
+                            <div class="email-body">
+                                <h2>Thank you for joining our community!</h2>
+                                <p id="previewEmailContent">Thank you for joining our community! We're thrilled to have you as a new member. As a welcome gift, here's a special 10% discount on your first purchase.</p>
+                                
+                                <p>Simply use the code WELCOME10 at checkout. This offer is valid for the next 7 days.</p>
+                                
+                                <p>We're constantly working to improve our products and services based on feedback from customers like you. If you have any questions or suggestions, please don't hesitate to reach out to our support team.</p>
+                                
+                                <p>Once again, welcome aboard! We can't wait to see what you'll accomplish with our platform.</p>
+                                
+                                <div class="email-cta">
+                                    <a href="https://example.com/shop" id="previewCta">Shop Now</a>
+                                </div>
+                            </div>
+                            
+                            <div class="email-footer" id="previewFooter">
+                                <p>© 2023 AppName. All rights reserved.</p>
+                                <p>123 Main Street, Anytown, USA</p>
+                                <p>You're receiving this email because you subscribed to our newsletter.</p>
+                                <p><a href="#">Unsubscribe</a> | <a href="#">Privacy Policy</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Send Test Modal -->
+    <div class="modal" id="sendTestModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Send Test Email</h2>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="testEmail">Recipient Email</label>
+                    <input type="email" id="testEmail" class="form-control" placeholder="Enter your email address">
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelTest">Cancel</button>
+                <button class="btn btn-primary" id="sendTest">Send Test</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // DOM Elements
+        const emailSubject = document.getElementById('emailSubject');
+        const headerTitle = document.getElementById('headerTitle');
+        const headerSubtitle = document.getElementById('headerSubtitle');
+        const emailContent = document.getElementById('emailContent');
+        const ctaText = document.getElementById('ctaText');
+        const ctaLink = document.getElementById('ctaLink');
+        const headerColor = document.getElementById('headerColor');
+        const footerText = document.getElementById('footerText');
+        
+        // Preview Elements
+        const previewHeaderTitle = document.getElementById('previewHeaderTitle');
+        const previewHeaderSubtitle = document.getElementById('previewHeaderSubtitle');
+        const previewEmailContent = document.getElementById('previewEmailContent');
+        const previewCta = document.getElementById('previewCta');
+        const previewFooter = document.getElementById('previewFooter');
+        const emailHeader = document.getElementById('emailHeader');
+        const emailPreview = document.getElementById('emailPreview');
+        
+        // Modal Elements
+        const sendTestModal = document.getElementById('sendTestModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelTest = document.getElementById('cancelTest');
+        const sendTest = document.getElementById('sendTest');
+        const testEmail = document.getElementById('testEmail');
+        
+        // Buttons
+        const saveBtn = document.getElementById('saveBtn');
+        const sendTestBtn = document.getElementById('sendTestBtn');
+        
+        // Device Selector
+        const deviceBtns = document.querySelectorAll('.device-btn');
+        
+        // Template Items
+        const templateItems = document.querySelectorAll('.template-item');
+        
+        // Event Listeners
+        headerTitle.addEventListener('input', updatePreview);
+        headerSubtitle.addEventListener('input', updatePreview);
+        emailContent.addEventListener('input', updatePreview);
+        ctaText.addEventListener('input', updatePreview);
+        ctaLink.addEventListener('input', updatePreview);
+        headerColor.addEventListener('input', updatePreview);
+        footerText.addEventListener('input', updatePreview);
+        
+        saveBtn.addEventListener('click', saveTemplate);
+        sendTestBtn.addEventListener('click', openTestModal);
+        closeModal.addEventListener('click', closeTestModal);
+        cancelTest.addEventListener('click', closeTestModal);
+        sendTest.addEventListener('click', sendTestEmail);
+        
+        // Device Selector Event Listeners
+        deviceBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                deviceBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const device = this.getAttribute('data-device');
+                emailPreview.className = 'email-preview ' + device;
+            });
+        });
+        
+        // Template Item Event Listeners
+        templateItems.forEach(item => {
+            item.addEventListener('click', function() {
+                templateItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                // In a real app, this would load the selected template
+                const templateName = this.querySelector('h4').textContent;
+                console.log('Selected template:', templateName);
+            });
+        });
+        
+        // Functions
+        function updatePreview() {
+            previewHeaderTitle.textContent = headerTitle.value;
+            previewHeaderSubtitle.textContent = headerSubtitle.value;
+            previewEmailContent.textContent = emailContent.value;
+            previewCta.textContent = ctaText.value;
+            previewCta.href = ctaLink.value;
+            emailHeader.style.backgroundColor = headerColor.value;
+            previewFooter.innerHTML = footerText.value.replace(/\n/g, '<br>');
+        }
+        
+        function saveTemplate() {
+            // In a real app, this would save the template to a database
+            const templateData = {
+                subject: emailSubject.value,
+                headerTitle: headerTitle.value,
+                headerSubtitle: headerSubtitle.value,
+                content: emailContent.value,
+                ctaText: ctaText.value,
+                ctaLink: ctaLink.value,
+                headerColor: headerColor.value,
+                footerText: footerText.value
+            };
+            
+            console.log('Saving template:', templateData);
+            
+            // Show success message
+            const successMessage = document.createElement('div');
+            successMessage.style.position = 'fixed';
+            successMessage.style.bottom = '20px';
+            successMessage.style.right = '20px';
+            successMessage.style.backgroundColor = 'var(--success-color)';
+            successMessage.style.color = 'white';
+            successMessage.style.padding = '12px 20px';
+            successMessage.style.borderRadius = '8px';
+            successMessage.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+            successMessage.style.zIndex = '1000';
+            successMessage.textContent = 'Template saved successfully!';
+            
+            document.body.appendChild(successMessage);
+            
+            // Remove success message after 3 seconds
+            setTimeout(() => {
+                successMessage.remove();
+            }, 3000);
+        }
+        
+        function openTestModal() {
+            sendTestModal.classList.add('active');
+        }
+        
+        function closeTestModal() {
+            sendTestModal.classList.remove('active');
+        }
+        
+        function sendTestEmail() {
+            const email = testEmail.value;
+            
+            if (!email) {
+                testEmail.style.borderColor = 'var(--error-color)';
+                return;
+            }
+            
+            // In a real app, this would send the test email
+            console.log('Sending test email to:', email);
+            
+            // Show success message
+            const successMessage = document.createElement('div');
+            successMessage.style.position = 'fixed';
+            successMessage.style.bottom = '20px';
+            successMessage.style.right = '20px';
+            successMessage.style.backgroundColor = 'var(--success-color)';
+            successMessage.style.color = 'white';
+            successMessage.style.padding = '12px 20px';
+            successMessage.style.borderRadius = '8px';
+            successMessage.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+            successMessage.style.zIndex = '1000';
+            successMessage.textContent = `Test email sent to ${email}!`;
+            
+            document.body.appendChild(successMessage);
+            
+            // Remove success message after 3 seconds
+            setTimeout(() => {
+                successMessage.remove();
+            }, 3000);
+            
+            // Close modal
+            closeTestModal();
+            
+            // Reset form
+            testEmail.value = '';
+        }
+        
+        // Initialize
+        updatePreview();
+    </script>
+</body>
+</html>
