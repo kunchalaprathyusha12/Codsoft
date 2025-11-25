@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Signup Flow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4F46E5;
+            --primary-dark: #4338CA;
+            --secondary-color: #F9FAFB;
+            --text-color: #1F2937;
+            --error-color: #EF4444;
+            --success-color: #10B981;
+            --border-color: #E5E7EB;
+            --placeholder-color: #9CA3AF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #F3F4F6;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .signup-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-top: 40px;
+        }
+
+        .app-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .app-header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .app-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background-color: rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: white;
+            width: 33.33%;
+            transition: width 0.3s ease;
+        }
+
+        .form-container {
+            padding: 24px;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .step-description {
+            color: #6B7280;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-control.error {
+            border-color: var(--error-color);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .form-control.error + .error-message {
+            display: block;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group input {
+            margin-top: 4px;
+            margin-right: 12px;
+        }
+
+        .checkbox-group label {
+            font-size: 14px;
+            color: #4B5563;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn:disabled {
+            background-color: #D1D5DB;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            margin-top: 12px;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 24px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: var(--border-color);
+        }
+
+        .divider span {
+            padding: 0 12px;
+            font-size: 14px;
+            color: #6B7280;
+        }
+
+        .social-login {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .social-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .social-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .social-btn i {
+            margin-right: 8px;
+            color: #4B5563;
+        }
+
+        .google-btn i {
+            color: #EA4335;
+        }
+
+        .facebook-btn i {
+            color: #1877F2;
+        }
+
+        .apple-btn i {
+            color: #000;
+        }
+
+        .success-container {
+            text-align: center;
+            padding: 40px 24px;
+        }
+
+        .success-icon {
+            width: 64px;
+            height: 64px;
+            background-color: var(--success-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        .success-icon i {
+            color: white;
+            font-size: 24px;
+        }
+
+        .success-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .success-message {
+            color: #6B7280;
+            margin-bottom: 24px;
+        }
+
+        .terms {
+            font-size: 12px;
+            color: #6B7280;
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .terms a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .interests-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .interest-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .interest-item:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .interest-item.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+
+        .interest-item input {
+            margin-right: 8px;
+        }
+
+        .interest-item label {
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0;
+            }
+            
+            .signup-container {
+                border-radius: 0;
+                margin-top: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="signup-container">
+            <div class="app-header">
+                <h1>Welcome to AppName</h1>
+                <p>Create your account in just a few steps</p>
+                <div class="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+            </div>
+
+            <div class="form-container">
+                <!-- Step 1: Basic Information -->
+                <div class="step active" id="step1">
+                    <h2 class="step-title">Basic Information</h2>
+                    <p class="step-description">Let's start with the basics to create your account</p>
+                    
+                    <form id="step1-form">
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName" class="form-control" placeholder="Enter your full name">
+                            <div class="error-message">Please enter your full name</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" class="form-control" placeholder="Enter your email">
+                            <div class="error-message">Please enter a valid email address</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" class="form-control" placeholder="Create a password">
+                            <div class="error-message">Password must be at least 8 characters</div>
+                        </div>
+                        
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="terms">
+                            <label for="terms">I agree to the Terms of Service and Privacy Policy</label>
+                        </div>
+                        
+                        <button type="button" class="btn" id="nextToStep2">Continue</button>
+                    </form>
+                    
+                    <div class="divider">
+                        <span>or</span>
+                    </div>
+                    
+                    <div class="social-login">
+                        <div class="social-btn google-btn">
+                            <i class="fab fa-google"></i>
+                            <span>Google</span>
+                        </div>
+                        <div class="social-btn facebook-btn">
+                            <i class="fab fa-facebook-f"></i>
+                            <span>Facebook</span>
+                        </div>
+                        <div class="social-btn apple-btn">
+                            <i class="fab fa-apple"></i>
+                            <span>Apple</span>
+                        </div>
+                    </div>
+                    
+                    <p class="terms">Already have an account? <a href="#">Sign in</a></p>
+                </div>
+
+                <!-- Step 2: Personalization -->
+                <div class="step" id="step2">
+                    <h2 class="step-title">Personalize Your Experience</h2>
+                    <p class="step-description">Select your interests to get personalized content</p>
+                    
+                    <form id="step2-form">
+                        <div class="interests-grid">
+                            <div class="interest-item">
+                                <input type="checkbox" id="interest1" name="interests" value="sports">
+                                <label for="interest1">Sports</label>
+                            </div>
+                            <div class="interest-item">
+                                <input type="checkbox" id="interest2" name="interests" value="music">
+                                <label for="interest2">Music</label>
+                            </div>
+                            <div class="interest-item">
+                                <input type="checkbox" id="interest3" name="interests" value="travel">
+                                <label for="interest3">Travel</label>
+                            </div>
+                            <div class="interest-item">
+                                <input type="checkbox" id="interest4" name="interests" value="food">
+                                <label for="interest4">Food</label>
+                            </div>
+                            <div class="interest-item">
+                                <input type="checkbox" id="interest5" name="interests" value="technology">
+                                <label for="interest5">Technology</label>
+                            </div>
+                            <div class="interest-item">
+                                <input type="checkbox" id="interest6" name="interests" value="art">
+                                <label for="interest6">Art</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="location">Location (Optional)</label>
+                            <input type="text" id="location" class="form-control" placeholder="Enter your city">
+                        </div>
+                        
+                        <button type="button" class="btn" id="nextToStep3">Continue</button>
+                        <button type="button" class="btn btn-secondary" id="backToStep1">Back</button>
+                    </form>
+                </div>
+
+                <!-- Step 3: Account Verification -->
+                <div class="step" id="step3">
+                    <h2 class="step-title">Verify Your Account</h2>
+                    <p class="step-description">We've sent a verification code to your email</p>
+                    
+                    <form id="step3-form">
+                        <div class="form-group">
+                            <label for="verificationCode">Verification Code</label>
+                            <input type="text" id="verificationCode" class="form-control" placeholder="Enter 6-digit code">
+                            <div class="error-message">Please enter a valid verification code</div>
+                        </div>
+                        
+                        <p style="font-size: 14px; color: #6B7280; margin-bottom: 16px;">
+                            Didn't receive the code? <a href="#" style="color: var(--primary-color);">Resend</a>
+                        </p>
+                        
+                        <button type="button" class="btn" id="completeSignup">Complete Signup</button>
+                        <button type="button" class="btn btn-secondary" id="backToStep2">Back</button>
+                    </form>
+                </div>
+
+                <!-- Success Screen -->
+                <div class="step" id="success">
+                    <div class="success-container">
+                        <div class="success-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <h2 class="success-title">Account Created Successfully!</h2>
+                        <p class="success-message">Welcome to AppName! Your account has been created and verified.</p>
+                        <button type="button" class="btn" id="goToApp">Go to App</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const steps = document.querySelectorAll('.step');
+        const progress = document.getElementById('progress');
+        
+        // Step 1 Elements
+        const step1Form = document.getElementById('step1-form');
+        const fullNameInput = document.getElementById('fullName');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const termsCheckbox = document.getElementById('terms');
+        const nextToStep2Btn = document.getElementById('nextToStep2');
+        
+        // Step 2 Elements
+        const step2Form = document.getElementById('step2-form');
+        const interests = document.querySelectorAll('input[name="interests"]');
+        const locationInput = document.getElementById('location');
+        const nextToStep3Btn = document.getElementById('nextToStep3');
+        const backToStep1Btn = document.getElementById('backToStep1');
+        
+        // Step 3 Elements
+        const step3Form = document.getElementById('step3-form');
+        const verificationCodeInput = document.getElementById('verificationCode');
+        const completeSignupBtn = document.getElementById('completeSignup');
+        const backToStep2Btn = document.getElementById('backToStep2');
+        
+        // Success Elements
+        const goToAppBtn = document.getElementById('goToApp');
+        
+        // Social Login Elements
+        const socialBtns = document.querySelectorAll('.social-btn');
+        
+        // Form Data
+        let formData = {
+            fullName: '',
+            email: '',
+            password: '',
+            interests: [],
+            location: '',
+            verificationCode: ''
+        };
+        
+        // Event Listeners
+        nextToStep2Btn.addEventListener('click', validateStep1);
+        nextToStep3Btn.addEventListener('click', saveStep2Data);
+        backToStep1Btn.addEventListener('click', () => showStep(1));
+        backToStep2Btn.addEventListener('click', () => showStep(2));
+        completeSignupBtn.addEventListener('click', validateStep3);
+        goToAppBtn.addEventListener('click', () => alert('Redirecting to app...'));
+        
+        // Social Login
+        socialBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const platform = this.classList.contains('google-btn') ? 'Google' : 
+                                this.classList.contains('facebook-btn') ? 'Facebook' : 'Apple';
+                alert(`Signing up with ${platform}...`);
+            });
+        });
+        
+        // Interest Selection
+        document.querySelectorAll('.interest-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const checkbox = this.querySelector('input[type="checkbox"]');
+                checkbox.checked = !checkbox.checked;
+                
+                if (checkbox.checked) {
+                    this.classList.add('selected');
+                } else {
+                    this.classList.remove('selected');
+                }
+            });
+        });
+        
+        // Functions
+        function showStep(stepNumber) {
+            steps.forEach(step => step.classList.remove('active'));
+            document.getElementById(`step${stepNumber}`).classList.add('active');
+            
+            // Update progress bar
+            progress.style.width = `${stepNumber * 33.33}%`;
+        }
+        
+        function validateStep1() {
+            let isValid = true;
+            
+            // Validate full name
+            if (fullNameInput.value.trim() === '') {
+                fullNameInput.classList.add('error');
+                isValid = false;
+            } else {
+                fullNameInput.classList.remove('error');
+                formData.fullName = fullNameInput.value.trim();
+            }
+            
+            // Validate email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(emailInput.value)) {
+                emailInput.classList.add('error');
+                isValid = false;
+            } else {
+                emailInput.classList.remove('error');
+                formData.email = emailInput.value;
+            }
+            
+            // Validate password
+            if (passwordInput.value.length < 8) {
+                passwordInput.classList.add('error');
+                isValid = false;
+            } else {
+                passwordInput.classList.remove('error');
+                formData.password = passwordInput.value;
+            }
+            
+            // Validate terms checkbox
+            if (!termsCheckbox.checked) {
+                alert('Please agree to the Terms of Service and Privacy Policy');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                showStep(2);
+            }
+        }
+        
+        function saveStep2Data() {
+            // Save interests
+            formData.interests = [];
+            interests.forEach(interest => {
+                if (interest.checked) {
+                    formData.interests.push(interest.value);
+                }
+            });
+            
+            // Save location
+            formData.location = locationInput.value.trim();
+            
+            // Move to next step
+            showStep(3);
+            
+            // Simulate sending verification code
+            console.log(`Verification code sent to ${formData.email}`);
+        }
+        
+        function validateStep3() {
+            // In a real app, this would validate against a server
+            if (verificationCodeInput.value.length === 6) {
+                formData.verificationCode = verificationCodeInput.value;
+                showSuccess();
+            } else {
+                verificationCodeInput.classList.add('error');
+            }
+        }
+        
+        function showSuccess() {
+            document.getElementById('success').classList.add('active');
+            document.getElementById('step3').classList.remove('active');
+            progress.style.width = '100%';
+            
+            // Log form data (in a real app, this would be sent to a server)
+            console.log('Form Data:', formData);
+        }
+        
+        // Input event listeners to remove error class on input
+        fullNameInput.addEventListener('input', () => fullNameInput.classList.remove('error'));
+        emailInput.addEventListener('input', () => emailInput.classList.remove('error'));
+        passwordInput.addEventListener('input', () => passwordInput.classList.remove('error'));
+        verificationCodeInput.addEventListener('input', () => verificationCodeInput.classList.remove('error'));
+    </script>
+</body>
+</html>
